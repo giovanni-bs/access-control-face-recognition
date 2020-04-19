@@ -1,0 +1,648 @@
+___________________________________
+Detection_window
+___________________________________
+
+import cv2
+import time
+import face_recognition
+import sys
+import os
+import time
+ 
+
+from reconhecimento import *
+from tkinter import messagebox
+from tkinter import *
+
+
+def main():
+	class Application:
+		def __init__(self, master=None):
+
+			self.Titulo = ("Arial", "20")
+			self.fontetexto = ("Arial", "12")
+			self.fontebotoes = ("Arial", "12")
+			self.titulo = Frame(master)
+			self.titulo.pack(side=TOP)
+			self.titulo.pack()
+
+			#entidade primeiro conteiner
+
+			self.primeiroContainer = Frame(master)
+			self.primeiroContainer.pack(side=TOP)
+			self.primeiroContainer.pack()
+
+			#botão Iniciar Reconhecimento
+
+			self.reconhecimento = Button(self.primeiroContainer, font=self.fontebotoes)
+			self.reconhecimento["text"] = "Iniciar Reconhecimento"
+			self.reconhecimento["command"] = self.rotina1
+			self.reconhecimento.pack()
+
+			#Titulo do TCC
+
+			self.mensagem = Frame(master)
+			self.mensagem.pack()
+			self.mensagem["pady"] = 10
+			self.mensagem["padx"] = 10
+			self.msg = Label(self.titulo, text="Controle de Acesso com Reconhecimento Facial ", font=self.Titulo)
+			#self.msg["font"] = ("Arial", "20")
+			self.mensagem.pack(side=TOP)
+			self.msg.pack ()
+
+			self.mensagem = Frame(master)
+			self.mensagem.pack()
+			self.mensagem["pady"] = 10
+			self.mensagem["padx"] = 10
+			self.msg = Label(self.mensagem, text="Aperte <Q> para fechar a janela de reconhecimento ", font=self.fontetexto)
+			#self.msg["font"] = ("Arial", "10")
+			self.msg.pack ()
+
+			self.mensagem0 = Frame(master)
+			self.mensagem0.pack()
+			self.mensagem0["pady"] = 10
+			self.mensagem0["padx"] = 10
+			self.msg = Label(self.mensagem0, text="Para cadastrar um novo usuário, escreva o nome e nível de acesso ", font=self.fontetexto)
+			#self.msg["font"] = ("Arial", "10")
+			self.msg.pack ()
+			
+			#primeiro conteiner
+
+			self.Container = Frame(master)
+			self.Container["padx"] = 20
+			self.Container.pack()
+
+			self.nomeLabel = Label(self.Container,text="Nome", font=self.fontetexto)
+			self.nomeLabel.pack(side=LEFT)
+
+			self.nome = Entry(self.Container)
+			self.nome["width"] = 29
+			self.nome["font"] = self.fontetexto
+			self.nome.pack(side=LEFT)
+
+			#caixa do cadastro
+
+			self.caixacadastro = Frame(master)
+			self.caixacadastro.pack()
+
+			#segundo conteiner
+			
+			self.Container2 = Frame(master)
+			self.Container2["padx"] = 20
+			self.Container2.pack()
+
+			self.acessoLabel = Label(self.Container2,text="Nível de acesso", font=self.fontetexto)
+			self.acessoLabel.pack(side=LEFT)
+			
+			global var0
+			self.var0 = StringVar()
+			a = Checkbutton(master, text="Porta 'a'", variable=self.var0, onvalue="a", offvalue="", command=self.cb, font=self.fontetexto)
+			a.pack()
+
+			global var1
+			self.var1 = StringVar()
+			b = Checkbutton(master, text="Porta 'b'", variable=self.var1, onvalue="b", offvalue="", command=self.cb, font=self.fontetexto)
+			b.pack()
+
+			global var2
+			self.var2 = StringVar()
+			c = Checkbutton(master, text="Porta 'c'", variable=self.var2, onvalue="c", offvalue="", command=self.cb, font=self.fontetexto)
+			c.pack()
+
+			global per
+			per = ""
+
+			#Mensagem de quando apertar o botão
+
+			self.mensagem1 = Frame(master)
+			self.mensagem1.pack()
+			self.mensagem1["padx"] = 10
+			self.mensagem1["pady"] = 10
+			self.msg = Label(self.mensagem1, text="Após digitar os dados, click no botão 'Abrir Camera' para tirar a foto", font=self.fontetexto)
+			#self.msg["font"] = ("Arial", "10")
+			self.msg.pack ()
+
+			#entidade para atrelar os botões
+
+			self.botoes = Frame(master)
+			self.botoes.pack()
+
+			#botao Abrir Camera
+			
+
+			self.abrircamera = Button(self.botoes, font=self.fontebotoes)
+			self.abrircamera["text"] = "Abrir Camera"
+			self.abrircamera["command"] = self.tirafoto
+			self.abrircamera.pack(side=LEFT)
+
+			#botao alterar cadastro
+
+			self.alterar = Button(self.botoes, font=self.fontebotoes)
+			self.alterar["text"] = "Alterar Cadastro"
+			self.alterar["command"] = self.rotina2
+			self.alterar.pack(side=LEFT)
+			#self.alterar.pack()
+
+			#botao Cancelar
+
+
+			self.Cancelar = Button(self.botoes, font=self.fontebotoes,fg="red", bg="grey")
+			self.Cancelar["text"] = "Fechar Aplicação"
+			self.Cancelar["command"] = self.mensagem0.quit
+			self.Cancelar.pack ()
+			
+			#mensagem para tirar a foto
+
+			self.widget = Frame(master)
+			self.widget.pack()
+			self.msg = Label(self.widget, text="Aperte <ESC> para sair do modo camera ou <s> para Salvar a foto e finalizar o cadastro", font=self.fontetexto)
+			self.msg.pack ()
+
+		def cb(self):
+			global per
+			#per = self.var0.get()
+			per = "{}{}{}".format(self.var0.get(), self.var1.get(), self.var2.get())
+			#print ("per:", per)
+			return per
+
+		def rotina1(self):
+			#print ('reconhecimento')
+			reconhecimento()
+			#cv2.destroyAllWindows()
+
+		def rotina2(self):
+			print ('alterar cadastro')
+
+			self.novoLabel = Label(self.caixacadastro,text="Novo nome", font=self.fontetexto)
+			self.novoLabel.pack(side=LEFT)
+
+			self.novo = Entry(self.caixacadastro)
+			self.novo["width"] = 21
+			self.novo["font"] = self.fontetexto
+			#self.novo.pack(side=LEFT)
+			self.novo.pack()
+
+			self.alterar = Button(self.caixacadastro, font=self.fontebotoes)
+			self.alterar["text"] = "confirmar alteração"
+			self.alterar["command"] = self.confirma
+			#self.alterar["command"] = self.valida
+			self.alterar.pack(side=LEFT)
+
+		def valida(self):
+
+			self.novo.destroy()
+			self.novoLabel.destroy()
+			self.alterar.destroy()
+			self.volta.destroy()
+
+
+
+		def confirma(self):
+			nome_antigo = self.nome.get()
+			novo_nome = self.novo.get()
+			if novo_nome != '':
+				acesso = "{}{}{}".format(self.var0.get(), self.var1.get(), self.var2.get())
+
+				self.alterar["command"] = self.valida
+
+				for fotos in os.listdir('./'):
+					if fotos.endswith('.jpg'):
+						dados = fotos.split('.')[0].split('_')
+		
+						if str(dados[0]) == nome_antigo:
+							#nome_arquivo = str(dados[0]) + "_" + acesso + '.jpg'
+							nome_arquivo = novo_nome + "_" + acesso + '.jpg'
+							os.rename(fotos, nome_arquivo)
+							print('{} {} alterado para: {} {}'.format(dados[0], dados[1], novo_nome, acesso))
+							self.volta = Button(self.caixacadastro, font=self.fontebotoes)
+							self.volta["text"] = "Encerra alteração"
+							self.volta["command"] = self.valida
+							self.alterar["command"] = self.valida
+							self.volta.pack(side=RIGHT)
+							self.novoLabel2 = messagebox.showinfo(' Alteração de cadastro', 'Cadastro alterado com sucesso!\n{} {} alterado para: {} {}'.format(dados[0], dados[1], novo_nome, acesso))
+			else:
+				self.novoLabel3 = messagebox.showerror("Alteração de cadastro", "Novo nome inválido!")
+
+
+
+		def tirafoto(self):
+			aba = self.nome.get()
+				#per = self.acesso.get()
+			if aba != "":
+				print ("nome do arquivo: {}_{}.jpg".format(aba, per))
+				
+				#aba = str(input("Insira um nome:"))
+				#per = str(input("Nivel e acesso:"))
+
+				camera_port = 0
+
+				nFrames = 30
+
+				camera = cv2.VideoCapture(camera_port)
+				
+				file = "/home/mansur/Downloads/TCC/{}_{}.jpg".format(aba, per) 
+				#file = "/home/pi/Downloads/Programa_final/{}_{}.jpg".format(aba, per)
+				#file = "/home/mansur/Downloads/TCC/{}.jpg".format(aba)
+
+				print ("Digite <ESC> para sair / <s> para Salvar")
+
+				emLoop= True
+
+				while(emLoop):
+
+					retval, img = camera.read()
+					cv2.imshow('Foto',img)
+
+					k = cv2.waitKey(100)
+
+					if k == 27:
+						emLoop= False
+
+
+					elif k == ord('s'):
+						cv2.imwrite(file,img)
+						#self.Cancelar["command"] = self.cancelar.quit
+						cv2.destroyAllWindows()
+						emLoop= False
+
+				cv2.destroyAllWindows()
+				camera.release()
+				self.novoLabel4 = messagebox.showinfo("Cadastro", "Cadastro realizado com sucesso!")
+
+			else:
+				self.novoLabel5 = messagebox.showerror("Cadastro", "Nome inválido!")
+
+
+		if __name__ == '__main__':
+			import sys
+			sys.exit((sys.argv))
+
+
+	root = Tk()
+	Application(root)
+	root.mainloop()
+
+_______________________
+Recognition_program
+_______________________
+
+import cv2
+import time
+import face_recognition
+import sys
+import os
+import requests
+
+
+
+def reconhecimento():
+
+	hierarquia = ''
+
+	aba = "Sem Cadastrado"
+	  
+	video_capture = cv2.VideoCapture(0)
+	known_face_encodings = []
+	known_face_names = []
+	hierarquias = []
+	for file in os.listdir('./'):
+		if file.endswith('.jpg'):
+			pessoa_image = face_recognition.load_image_file(file)
+			pessoa_face_encoding = face_recognition.face_encodings(pessoa_image)[0]
+			known_face_encodings.append(pessoa_face_encoding)
+			data = file.split('.')[0].split('_')
+			known_face_names.append(data[0])
+			if len(data) == 2:
+				hierarquias.append(data[1])
+			else:
+				hierarquias.append('')
+
+	# Initialize some variables
+	face_locations = []
+	face_encodings = []
+	face_names = []
+	process_this_frame = True
+
+	while True:
+	# Grab a single frame of video
+		ret, frame = video_capture.read()
+
+	# Resize frame of video to 1/4 size for faster face recognition processing
+		small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+
+	# Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+		rgb_small_frame = small_frame[:, :, ::-1]
+
+	# Only process every other frame of video to save time
+		if process_this_frame:
+			#name = aba
+		# Find all the faces and face encodings in the current frame of video
+			face_locations = face_recognition.face_locations(rgb_small_frame)
+			face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+
+			face_names = []
+			for face_encoding in face_encodings:
+			# See if the face is a match for the known face(s)
+				matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+				name = aba
+				
+
+			# If a match was found in known_face_encodings, just use the first one.
+				if True in matches:
+					first_match_index = matches.index(True)
+					name = known_face_names[first_match_index]
+					hierarquia = hierarquias[first_match_index]
+
+				face_names.append(name)
+
+		process_this_frame = not process_this_frame
+
+
+	# Display the results
+		for (top, right, bottom, left), name in zip(face_locations, face_names):
+		
+			top *= 4
+			right *= 4
+			bottom *= 4
+			left *= 4
+
+		
+			cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+
+		
+			cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+			font = cv2.FONT_HERSHEY_DUPLEX
+
+			#monta o texto que aparecerá junto ao rosto reconhecido
+
+			cv2.putText(frame, (name + ' ' + hierarquia), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+			#cv2.putText(frame, (name), (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+
+			#acrescentar uma comparação tipo & para evitar que pesseoas 
+			#sem cadastro herdem o nível de acesso de outras pessoas
+
+			#print(name, hierarquia)
+			print(name, hierarquia)
+
+			if (name == aba):
+				hierarquia = ''
+				print('Sem nível de acesso')
+
+			if ('a' in hierarquia) & (name != aba):
+				print('pode abrir porta a')
+				#requests.request("GET", "http://192.168.43.67:8888/gpio5on" , data='', headers={'TWFuc3VyOk1hbnN1cjAx': ''} )
+				#requests.request("GET", "http://192.168.43.67:8888/gpio5off" , data='', headers={'TWFuc3VyOk1hbnN1cjAx': ''} )
+			
+			if ('b' in hierarquia) & (name != aba):
+				print('pode abrir porta b')
+				#requests.request("GET", "http://192.168.43.67:8888/gpio2on" , data='', headers={'TWFuc3VyOk1hbnN1cjAx': ''} )
+				#requests.request("GET", "http://192.168.43.67:8888/gpio2off" , data='', headers={'TWFuc3VyOk1hbnN1cjAx': ''} )
+				
+			if ('c' in hierarquia) & (name != aba):
+				print('pode abrir porta c')
+				#requests.request("GET", "http://192.168.43.67:8888/gpio4on" , data='', headers={'TWFuc3VyOk1hbnN1cjAx': ''} )
+				#requests.request("GET", "http://192.168.43.67:8888/gpio4off" , data='', headers={'TWFuc3VyOk1hbnN1cjAx': ''} )
+				
+		cv2.imshow('Video', frame)
+	
+		if cv2.waitKey(1) & 0xFF == ord('q'):
+			cv2.destroyAllWindows()
+			break
+
+_________________________
+Main_program
+_________________________
+
+from janela import *
+
+main()
+
+________________________________________
+NodeMCU ESP8266 Wi-fi module program
+________________________________________
+
+#include <ESP8266WiFi.h>
+
+
+const char* ssid = "Mansur";
+const char* password = "Mansur01";
+/
+
+//*****configuração de ip fixo*************
+
+
+//DEFINIÇÃO DE IP FIXO PARA O NODEMCU
+IPAddress ip(192,168,43,2); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR. EX: 192.168.1.110 **** ISSO VARIA, NO MEU CASO É: 192.168.0.175
+IPAddress gateway(192,168,43,1); //GATEWAY DE CONEXÃO (ALTERE PARA O GATEWAY DO SEU ROTEADOR/CELULAR)
+IPAddress subnet(255,255,255,0); //MASCARA DE REDE
+
+//************************************
+
+// Web Server on port 8888
+WiFiServer server(8888);
+
+
+
+// variables
+String header;
+String gpio5_state = "Off";
+String gpio2_state = "Off";
+
+//teste porta c
+String gpio4_state = "Off";
+int gpio4_pin = 4;
+//fim teste porta c
+int gpio5_pin = 5;
+int gpio2_pin = 2;
+int timeout = 0;
+
+
+//*********************************************************************************************
+
+
+void setup() {
+  // Initializing serial port for debugging purposes
+  Serial.begin(115200);
+  delay(10);
+
+
+//*********************************************************************************************
+  
+  // preparing GPIOs
+  pinMode(gpio5_pin, OUTPUT);
+  digitalWrite(gpio5_pin, LOW);
+  pinMode(gpio2_pin, OUTPUT);
+  digitalWrite(gpio2_pin, HIGH);
+  pinMode(gpio4_pin, OUTPUT);
+  digitalWrite(gpio4_pin, LOW);
+
+
+//*********************************************************************************************
+  
+  // Connecting to WiFi network
+    Serial.println();
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+  
+    WiFi.begin(ssid, password); //PASSA OS PARÂMETROS PARA A FUNÇÃO QUE VAI FAZER A CONEXÃO COM A REDE SEM FIO
+
+ //configuração de ip fixo***********************
+ 
+    WiFi.config(ip, gateway, subnet); //PASSA OS PARÂMETROS PARA A FUNÇÃO QUE VAI SETAR O IP FIXO NO NODEMCU
+
+ //*********************************************
+  
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+      //timeout = timeout++;
+      //if (timeout = 100)
+      //Serial.print ("Expirou");
+      //break; 
+      }
+      
+    Serial.println("");
+    Serial.println("WiFi connected");
+
+//*********************************************************************************************
+
+  
+  // Starting the web server
+  server.begin();
+  Serial.println("Web server running. Waiting for the ESP IP...");
+  delay(10000);
+  
+  // Printing the ESP IP address
+  Serial.println(WiFi.localIP());
+}
+
+
+
+
+//*********************************************************************************************
+
+ 
+void loop() {
+  // Listenning for new clients
+  WiFiClient client = server.available();
+  
+  if (client) {
+    Serial.println("New client");
+    // boolean to locate when the http request ends
+    boolean blank_line = true;
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        header += c;
+  
+        if (c == '\n' && blank_line) {
+
+
+//*********************************************************************************************
+          // checking if header is valid
+          // TWFuc3VyOk1hbnN1cjAx = 'Mansur:Mansur01' (user:pass) base64 encode
+//*********************************************************************************************
+          
+          Serial.print(header);
+          
+          // Finding the right credential string
+          if(header.indexOf("TWFuc3VyOk1hbnN1cjAx") >= 0) 
+        {
+            //successful login
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-Type: text/html");
+            client.println("Connection: close");
+            client.println();
+            // turns the GPIOs on and off
+            if(header.indexOf("GET / HTTP/1.1") >= 0) {
+                Serial.println("Main Web Page");
+            }   
+            else if(header.indexOf("GET /gpio5on HTTP/1.1") >= 0){
+                Serial.println("GPIO 5 On");
+                gpio5_state = "On";
+                digitalWrite(gpio5_pin, HIGH);
+            }
+            else if(header.indexOf("GET /gpio5off HTTP/1.1") >= 0){
+                Serial.println("GPIO 5 Off");
+                gpio5_state = "Off";
+                digitalWrite(gpio5_pin, LOW);
+            }
+            else if(header.indexOf("GET /gpio2on HTTP/1.1") >= 0){
+                Serial.println("GPIO 2 On");
+                gpio2_state = "On";
+                digitalWrite(gpio2_pin, LOW);
+            }
+            else if(header.indexOf("GET /gpio2off HTTP/1.1") >= 0){
+                Serial.println("GPIO 2 Off");
+                gpio2_state = "Off";
+                digitalWrite(gpio2_pin, HIGH);
+            }
+            else if(header.indexOf("GET /gpio4on HTTP/1.1") >= 0){
+                Serial.println("GPIO 4 On");
+                gpio4_state = "On";
+                digitalWrite(gpio4_pin, HIGH);
+            }
+            else if(header.indexOf("GET /gpio4off HTTP/1.1") >= 0){
+                Serial.println("GPIO 4 Off");
+                gpio4_state = "Off";
+                digitalWrite(gpio4_pin, LOW);
+            }
+
+
+
+//*********************************************************************************************
+//
+//          Web page
+//
+//*********************************************************************************************
+
+            client.println("<!DOCTYPE HTML>");
+            client.println("<html>");
+            client.println("<head>");
+            client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+            client.println("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">");                                                                    
+            client.println("</head><div class=\"container\">");
+            client.println("<h1> TCC Controle de Acesso Com Reconhecimento Facial </h1>");
+            client.println("<h2>Porta A: " + gpio5_state);          
+            client.println("<div class=\"row\">");
+            client.println("<div class=\"col-md-2\"><a href=\"/gpio5on\" class=\"btn btn-block btn-lg btn-success\" role=\"button\">Abrir</a></div>");
+            client.println("<div class=\"col-md-2\"><a href=\"/gpio5off\" class=\"btn btn-block btn-lg btn-danger\" role=\"button\">Fechar</a></div>");                                                                    
+            client.println("</div>");
+            client.println("<h2>Porta B: " + gpio2_state);          
+            client.println("<div class=\"row\">");
+            client.println("<div class=\"col-md-2\"><a href=\"/gpio2on\" class=\"btn btn-block btn-lg btn-success\" role=\"button\">Abrir</a></div>");
+            client.println("<div class=\"col-md-2\"><a href=\"/gpio2off\" class=\"btn btn-block btn-lg btn-danger\" role=\"button\">Fechar</a></div>");                                                                    
+            client.println("</div>");
+            client.println("<h2>Porta C: " + gpio4_state);      
+            client.println("<div class=\"row\">");
+            client.println("<div class=\"col-md-2\"><a href=\"/gpio4on\" class=\"btn btn-block btn-lg btn-success\" role=\"button\">Abrir</a></div>");                                                                    
+            client.println("<div class=\"col-md-2\"><a href=\"/gpio4off\" class=\"btn btn-block btn-lg btn-danger\" role=\"button\">Fechar</a></div>");
+            client.println("</div></div></html>");    
+          } 
+       // wrong user or passm, so http request fails...   
+        else {            
+           client.println("HTTP/1.1 401 Unauthorized");
+           client.println("WWW-Authenticate: Basic realm=\"Secure\"");
+           client.println("Content-Type: text/html");
+           client.println();
+           client.println("<html>Authentication failed</html>");
+        }   
+        header = "";
+        break;
+        }
+        if (c == '\n') {
+          // when starts reading a new line
+          blank_line = true;
+        }
+        else if (c != '\r') {
+          // when finds a character on the current line
+          blank_line = false;
+        }
+      }
+    }  
+    // closing the client connection
+    delay(1);
+    client.stop();
+    Serial.println("Client disconnected.");
+  }
+}

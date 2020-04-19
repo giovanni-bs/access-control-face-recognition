@@ -1,0 +1,3 @@
+from janela import *
+
+main()
